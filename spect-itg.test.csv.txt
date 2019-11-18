@@ -1,1 +1,3 @@
-accuracy: 0.78
+Accuracy: 145/187(0.78)
+True Positive: 
+True Negative: 

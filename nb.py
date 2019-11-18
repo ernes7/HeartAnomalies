@@ -161,7 +161,11 @@ def main():
     filename = sys.argv[2] + ".txt" #name of file ending in txt
     f = open(filename, "w") # create file
     accuracy[2] = format(accuracy[2], '.2g') #floating point arithmetic
-    f.write("Accuracy: " + str(accuracy[2])) 
+
+    f.writelines("Accuracy: " + str(accuracy[0]) + "/" + str(accuracy[1]) + "(" + str(accuracy[2]) + ")")
+
+    f.writelines("\nTrue Positive: ")
+    f.writelines("\nTrue Negative: ") 
     f.close()
     # ------------------------------------------------------------
  
