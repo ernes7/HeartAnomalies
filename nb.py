@@ -50,20 +50,85 @@ def readFile(dFile):
 # note : Because the log of 0 is undefined, it would probably be a 
 # good idea not to go there, so we usem-estimation byadding an arbitrary 0.5 to the 
 # numerator and denominator counts of each probability.
-def fileP(data):
-    hearts = len(data)
+def fileP(features):
+    hearts = len(features) + 0.5
 
     # count_nonzero is used due to all 1's been in the beggining of the file
     # and the 0's at the end
-    n = np.count_nonzero(data) + 0.5
+    n = np.count_nonzero(features) + 0.5
     nP = n / float(hearts)
 
-    ab = hearts - n
+    ab = hearts - n + 0.5
     abP = ab / float(hearts)
 
     return n, nP, ab, abP, hearts
-    
 
+# Looping through features
+#output : determine probability for each feature
+def looping(naList, data, n, ab):
+
+    def probabilities(intances, features, n, ab):
+
+        #initialize
+        # --------------
+        # abnormal = 0 & feature = 1   
+        ab1 = len(np.where((intances==0) & (features==1))[0])  
+        # normal = 1 & feature = 0
+        n1 = len(np.where((intances==1) & (features==1))[0]) 
+         # abnormal = 0 & feature = 1
+        ab0 = ab - ab1 + .5                                
+        # normal = 1 & feature = 1
+        n0 = n - n1 + .5     
+
+        ab1 += 0.5
+        n1 += 0.5
+
+        #probabilities
+        ab0P = ab0/float(ab) 
+        ab1P = ab1/float(ab) 
+        n0P = n0/float(n) 
+        n1P = n1/float(n)
+
+        #arrays of normal and abnormal probabilities
+        normal = np.zeros(2)
+        abnormal = np.zeros(2)
+        normal[0] = ab0P
+        normal[1] = ab1P
+        abnormal[0] = n0P
+        abnormal[1] = n1P  
+
+        #log to make them smaller
+        logs = np.log2( [normal, abnormal])
+
+        return logs         
+
+    
+    for i in range(1, (len(data[0]))):
+        naList.append( probabilities(data[:,0], data[:,i], n, ab) )
+
+    return naList
+
+def classifier(dataTest, naList):
+
+    learner = []
+    dataL = len(dataTest)
+
+    for i in range(dataL):
+        logN = 0 
+        logAB = 0    
+
+        for j in range(1, (len(dataTest[0]))):
+            x = dataTest[i][j]
+            logAB += naList[j-1][0][x]
+            logN += naList[j-1][1][x]
+        
+        if logN > logAB:
+            learner.append(1)
+        else:
+            learner.append(0)
+
+    return learner
+    
 def main():
 
     # Take the input
@@ -80,18 +145,30 @@ def main():
 
     # total of normal and abnormal heart + Probabilities of each given data
     n, nP, ab, abP, hearts = fileP(data[:,0])
+
+    # determines probability for each feature - EXPLAIN
+    naList = looping(naList, data, n, ab)
+
+    # EXPLAIN
+    learner = classifier(dataTest, naList)
+
+    #EXPLAIN Calculate and Merge Accuracy
+    # split into funtions
+    calculate = np.equal(dataTest[:,0], learner)
+    accuracy = [np.sum(calculate), len(dataTest), np.sum(calculate)/ float(len(dataTest))]
+
+    # OUTPUT TO FILE ---------------------------------------------
+    filename = sys.argv[2] + ".txt" #name of file ending in txt
+    f = open(filename, "w") # create file
+    accuracy[2] = format(accuracy[2], '.2g') #floating point arithmetic
+    f.write("Accuracy: " + str(accuracy[2])) 
+    f.close()
+    # ------------------------------------------------------------
  
+    
 
     #-----------------------------------------------------------
-    print(fileTrain)
-    print(fileTest)
-
-    print(data)
-    print(dataLen)
-    print(dataTest)
-    print(dataTestLen)
-
-    print(n,nP,ab,abP,hearts)
+    print(accuracy)
     #-----------------------------------------------------------
 
 main()
