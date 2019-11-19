@@ -13,6 +13,7 @@ Hardware and software setup:
 How to execute:
     $ Python nb.py trainFile testFile
     (For example: python nb.py spect-orig.train.csv spect-orig.test.csv )
+    *** MUST HAVE NUMPY INSTALLED ***
 
 Output:
     Txt solution file corresponding to the name of the instance.
@@ -20,6 +21,57 @@ Output:
 
 How the code works:
     1. Take names of file using inputUser()
-    2. Read input from files using readFile()
-    3. Extract info from data such as total hearts, 
-        abnormal, and normal.
+    2. Read input from files
+    3. Extract info from data such as abnormal and normal hearts.
+    4. Determines probability for each feature using learnerFunction()
+        4.1 Looping calls probabilities() which works the following way:
+  
+            # This function works in only 1 feature at a time
+            # *** Example for a random feature ***
+            # Suppose there are 200 hearts, 120 normal
+            #         abnormal normal
+            #             0     1     P(0)     P(1)
+            # feature=1  30    100    30/80    100/120
+            # feature=0  50    20     50/80    20/120
+            # total      80   120     80/80    120/120
+
+            # 30/80: represents probability of feature being 1 given that heart is abnormal
+            # 50/80: represents probability of feature being 0 given that heart is abnormal
+            # 100/120: represents probability of feature being 1 given that heart is normal
+            # 20/120: represents probability of feature being 1 given that heart is normal
+        4.2
+            # learnerFunction() then goes through each feature and
+            # append output of probalitites of that feature to array of probabilities (naList)
+    5. Classifier
+        5.1 Goes through every heart
+        5.2 In every heart, goes through all the features and perform this logic:
+    
+            # Logic Behind the classifier
+            # --------------------------
+            #  P(abnormal)               P(Feature1)
+            #  80/200  +  30/80(Feature = 1) OR 50/80(Feature=0) + ... (all feautures)
+            #
+            #  P(normal)                 P(Feature1)
+            #  120/200 +  100/120(Feature = 1) OR 20/120(Feature = 0) + ... (all features)
+ 
+        5.3 Which ever is bigger between P(abnormal) and P(normal)
+            at a given heart, gets added to the learner. 
+            Normal gets add it as 1, and Abnormal as 0.
+
+    6. Calculate If the heart #1 at dataTest and Learner are the same, 
+        returns True at that index in array named calculate.
+        This is used to test the learner against the test data. 
+    7. Use the previous calculation to determine the Accuracy. 
+    8. Now determine the fraction of class-0 (abnormal) instances 
+        that are classified correctly (”true negative rate”).  
+        Also the fraction of class-1 (normal) instances 
+        that are classified correctly (”true positive rate”)
+    9. Output results to txt file and console.
+
+How the code did:
+    For the resplit data, I get 72/90, and Bart Massey results show 78/90,
+    I am off by 6 hearts. I will keep working on it until final submission. 
+    If not improvement is made, then that result will hold. 
+    Reasons for this may be a miss calculation in the probabilities() function
+    or a bad implementation of the Classifier()
+

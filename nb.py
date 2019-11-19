@@ -51,7 +51,7 @@ def fileP(features):
 
 # Looping through features
 #output : determine probability for each feature
-def looping(naList, data, n, ab):
+def learnerFunction(naList, data, n, ab):
 
     def probabilities(intances, features, n, ab):
 
@@ -96,7 +96,7 @@ def looping(naList, data, n, ab):
         abnormal[0] = n0/float(n)
         abnormal[1] = n1/float(n)  
 
-        #log to make them smaller
+        # log to make them smaller
         # this is not really necessary or affects the
         # final outcome, but it definetely simplifies
         # the work. 
@@ -117,9 +117,11 @@ def classifier(dataTest, naList):
 
     # Logic Behind the classifier
     # --------------------------
-    # 
+    #  P(abnormal)               P(Feature1)
+    #  80/200  +  30/80(Feature = 1) OR 50/80(Feature=0) + ... (all feautures)
     #
-    #
+    #  P(normal)                 P(Feature1)
+    #  120/200 +  100/120(Feature = 1) OR 20/120(Feature = 0) + ... (all features)
 
     learner = [] # array of probabilities learned from every heart
     dataL = len(dataTest)
@@ -158,16 +160,16 @@ def main():
     # Read data and length from test file
     dataTest = np.loadtxt(fileTest, delimiter=",", dtype=int)
 
-    # total of normal and abnormal heart + Probabilities of each given data
+    # total of normal and abnormal heart
     n, ab = fileP(data[:,0])
 
     # determines probability for each feature 
     #array of probabilities for normal or abnormal hearts
     naList = []
     # fill array
-    naList = looping(naList, data, n, ab)
+    naList = learnerFunction(naList, data, n, ab)
 
-    # EXPLAIN
+    # Creates the learner array based on the probabilities from the learnerFunction
     learner = classifier(dataTest, naList)
 
     # Calculate and Merge Accuracy
@@ -184,6 +186,7 @@ def main():
     # True Positive and Negative Calculation
     #https://docs.scipy.org/doc/numpy/reference/generated/numpy.where.html
     #https://docs.scipy.org/doc/numpy/reference/generated/numpy.count_nonzero.html
+    #https://docs.scipy.org/doc/numpy/reference/generated/numpy.asarray.html
     # TRUE POSITIVE ---------------------------------------
     same = np.where((dataTest[:,0] == 1) & (np.asarray(learner) == 1)) 
     count = np.count_nonzero(dataTest[:,0] == 1) # total number of respective heart(normal or abnormal)
@@ -210,8 +213,8 @@ def main():
     # ------------------------------------------------------------
     #-----------------------------------------------------------
     print("Accuracy: ",accuracy)
-    print("True Negative: ",truePositive)
-    print("True Positive: " ,trueNegative)
+    print("True Positive: ",truePositive)
+    print("True Negative: " ,trueNegative)
     #-----------------------------------------------------------
 
 main()
