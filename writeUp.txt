@@ -69,9 +69,20 @@ How the code works:
     9. Output results to txt file and console.
 
 How the code did:
-    For the resplit data, I get 72/90, and Bart Massey results show 78/90,
-    I am off by 6 hearts. I will keep working on it until final submission. 
+    For the resplit data, I get 71/90, and Bart Massey results show 78/90,
+    I am off by 7 hearts. I will keep working on it until final submission. 
     If not improvement is made, then that result will hold. 
     Reasons for this may be a miss calculation in the probabilities() function
     or a bad implementation of the Classifier()
+
+Questions:
+Which is more important in this application:  
+accuracy on abnormal instances or accuracy on normal instances?
+
+I think True Negative is more important since thats what we are looking
+for, an abnomal heart to detect. And that is the factor that decides it. 
+
+Which dataset seems to give the best results?
+
+Resplit gives me the best results with a probabilities of 71/90(0.78)
 

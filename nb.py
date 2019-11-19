@@ -180,7 +180,7 @@ def main():
     # The result of this is used to output the accuracy
     calculate = np.equal(dataTest[:,0], learner)
     # https://docs.scipy.org/doc/numpy/reference/generated/numpy.sum.html
-    accuracy = [np.sum(calculate), len(dataTest), np.sum(calculate)/ float(len(dataTest))]
+    accuracy = [np.sum(calculate)-1, len(dataTest), np.sum(calculate)/ float(len(dataTest))]
 
 
     # True Positive and Negative Calculation
@@ -190,7 +190,7 @@ def main():
     # TRUE POSITIVE ---------------------------------------
     same = np.where((dataTest[:,0] == 1) & (np.asarray(learner) == 1)) 
     count = np.count_nonzero(dataTest[:,0] == 1) # total number of respective heart(normal or abnormal)
-    truePositive = [ len(same[0]), count, len(same[0])/float(count)] # format
+    truePositive = [ len(same[0])-1, count, len(same[0])/float(count)] # format
 
     # TRUE NEGATIVE ----------------------------------------
     x = accuracy[0]-truePositive[0]
