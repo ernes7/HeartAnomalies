@@ -6,7 +6,9 @@ HW 3 - Heart Anomalies
 WriteUp
 
 *********************
-
+exlain clasffifier
+explain calculate
+explain accuracy
 true positive and true negative in main()
 eliminate unused variables using laptop vscode
 
@@ -26,4 +28,3 @@ Output:
     (For Example: spect-orig.test.csv.txt )
 
 How the code works:
-    

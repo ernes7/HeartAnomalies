@@ -70,9 +70,9 @@ def looping(naList, data, n, ab):
 
     def probabilities(intances, features, n, ab):
 
-        #initialize
+        # Feature Probabilities Function
         # https://docs.scipy.org/doc/numpy/reference/generated/numpy.where.html
-        # the 0.5 is due to log of 0 undefined. Explained in fileP()
+        # the +0.5 is due to log of 0 undefined. Explained in fileP()
         # np.where Returns elements chosen from x or y depending on condition
         # *** Example for a random feature ***
         # Suppose there are 200 hearts, 120 normal
@@ -130,20 +130,27 @@ def looping(naList, data, n, ab):
 
 def classifier(dataTest, naList):
 
-    learner = []
+    # *** 
+
+    learner = [] # array of probabilities learned from every heart
     dataL = len(dataTest)
 
+    # goes through all hearts
     for i in range(dataL):
-        logN = 0 
-        logAB = 0    
+        # set back to 0 every time that switch to new heart
+        n = 0 
+        ab = 0    
 
+        # goes through all the feautures in that heart
         for j in range(1, (len(dataTest[0]))):
             x = dataTest[i][j]
-            logAB += naList[j-1][0][x]
-            logN += naList[j-1][1][x]
+            ab += naList[j-1][0][x]
+            n += naList[j-1][1][x]
         
-        if logN > logAB:
+        # if normal > abnormal, a "1" gets added to the learner
+        if n > ab:
             learner.append(1)
+        # "0" is added otherwise
         else:
             learner.append(0)
 
@@ -163,8 +170,8 @@ def main():
     # total of normal and abnormal heart + Probabilities of each given data
     n, nP, ab, abP, hearts = fileP(data[:,0])
 
-    # determines probability for each feature - EXPLAIN
-    #1D array of probabilities for normal or abnormal hearts
+    # determines probability for each feature 
+    #array of probabilities for normal or abnormal hearts
     naList = []
     # fill array
     naList = looping(naList, data, n, ab)
@@ -174,7 +181,10 @@ def main():
 
     #EXPLAIN Calculate and Merge Accuracy
     # https://docs.scipy.org/doc/numpy/reference/generated/numpy.equal.html
+    # If the heart #1 at dataTest and Learner are the same, 
+    # returns True at that index in array named calculate.
     calculate = np.equal(dataTest[:,0], learner)
+
     # https://docs.scipy.org/doc/numpy/reference/generated/numpy.sum.html
     accuracy = [np.sum(calculate), len(dataTest), np.sum(calculate)/ float(len(dataTest))]
 
