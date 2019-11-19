@@ -1,0 +1,29 @@
+
+Ernesto Martinez
+ernes@pdx.edu
+CS 441 - Artifial Intelligence
+HW 3 - Heart Anomalies
+WriteUp
+
+*********************
+
+true positive and true negative in main()
+eliminate unused variables using laptop vscode
+
+*********************
+
+Hardware and software setup:
+    macOS Mojave (Version 10.14.6)
+    Processor: 2.7Ghz Intel Core i5
+    Memory: 8 GB 1867 Mhz DDR3
+
+How to execute:
+    $ Python nb.py trainFile testFile
+    (For example: python nb.py spect-orig.train.csv spect-orig.test.csv )
+
+Output:
+    Txt solution file corresponding to the name of the instance.
+    (For Example: spect-orig.test.csv.txt )
+
+How the code works:
+    

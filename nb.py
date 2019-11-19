@@ -8,6 +8,7 @@ import sys
 
 # To a better understanding of Naive bayes I used:
 # https://www.geeksforgeeks.org/naive-bayes-classifiers/
+# Key concepts in probabilities() and classifier() are based on this website.
 
 # Other references
 # https://docs.scipy.org/doc/numpy/reference/generated/numpy.loadtxt.html
@@ -56,10 +57,10 @@ def fileP(features):
     # count_nonzero is used due to all 1's been in the beggining of the file
     # and the 0's at the end
     n = np.count_nonzero(features) + 0.5
-    nP = n / float(hearts)
+    nP = n / float(hearts) #probability of normal
 
     ab = hearts - n + 0.5
-    abP = ab / float(hearts)
+    abP = ab / float(hearts) # Probability of abnormal
 
     return n, nP, ab, abP, hearts
 
@@ -70,41 +71,60 @@ def looping(naList, data, n, ab):
     def probabilities(intances, features, n, ab):
 
         #initialize
+        # https://docs.scipy.org/doc/numpy/reference/generated/numpy.where.html
+        # the 0.5 is due to log of 0 undefined. Explained in fileP()
+        # np.where Returns elements chosen from x or y depending on condition
+        # *** Example for a random feature ***
+        # Suppose there are 200 hearts, 120 normal
+        #         abnormal normal
+        #             0     1     P(0)     P(1)
+        # feature=1  30    100    30/80    100/120
+        # feature=0  50    20     50/80    20/120
+        # total      80   120     80/80    120/120
+
+        # 30/80: represents probability of feature being 1 given that heart is abnormal
+        # 50/80: represents probability of feature being 0 given that heart is abnormal
+        # 100/120: represents probability of feature being 1 given that heart is normal
+        # 20/120: represents probability of feature being 1 given that heart is normal
+
+        # *****************************
         # --------------
         # abnormal = 0 & feature = 1   
-        ab1 = len(np.where((intances==0) & (features==1))[0])  
+        ab1 = len(np.where((intances==0) & (features==1))[0]) 
+        ab1 += 0.5 
         # normal = 1 & feature = 0
         n1 = len(np.where((intances==1) & (features==1))[0]) 
+        n1 += 0.5
          # abnormal = 0 & feature = 1
         ab0 = ab - ab1 + .5                                
         # normal = 1 & feature = 1
         n0 = n - n1 + .5     
 
-        ab1 += 0.5
-        n1 += 0.5
-
-        #probabilities
-        ab0P = ab0/float(ab) 
-        ab1P = ab1/float(ab) 
-        n0P = n0/float(n) 
-        n1P = n1/float(n)
-
-        #arrays of normal and abnormal probabilities
-        normal = np.zeros(2)
-        abnormal = np.zeros(2)
-        normal[0] = ab0P
-        normal[1] = ab1P
-        abnormal[0] = n0P
-        abnormal[1] = n1P  
+        # arrays of normal and abnormal probabilities
+        # create the arrays and fill them with zeros to later use of those spaces
+        # https://docs.scipy.org/doc/numpy/reference/generated/numpy.zeros.html
+        normal = np.zeros(2, dtype= float)
+        abnormal = np.zeros(2, dtype= float)
+        # calculate and store probabilities.
+        normal[0] = ab0/float(ab)
+        normal[1] = ab1/float(ab)
+        abnormal[0] = n0/float(n)
+        abnormal[1] = n1/float(n)  
 
         #log to make them smaller
+        # this is not really necessary or affects the
+        # final outcome, but it definetely simplifies
+        # the work. 
+        # https://docs.scipy.org/doc/numpy-1.14.0/reference/generated/numpy.log2.html
         logs = np.log2( [normal, abnormal])
 
         return logs         
 
-    
-    for i in range(1, (len(data[0]))):
+    # goes through the 22 features ( in orig ) or all feautures depending on file
+    # append output of probalitites of that feature to array of probabilities
+    for i in range(1, (len(data[0]))): 
         naList.append( probabilities(data[:,0], data[:,i], n, ab) )
+    
 
     return naList
 
@@ -134,9 +154,6 @@ def main():
     # Take the input
     fileTrain, fileTest = inputUser(sys.argv)
 
-    #1D array of probabilities for normal or abnormal hearts
-    naList = []
-
     # Read data and length from training file
     data, dataLen = readFile(fileTrain)
 
@@ -147,14 +164,18 @@ def main():
     n, nP, ab, abP, hearts = fileP(data[:,0])
 
     # determines probability for each feature - EXPLAIN
+    #1D array of probabilities for normal or abnormal hearts
+    naList = []
+    # fill array
     naList = looping(naList, data, n, ab)
 
     # EXPLAIN
     learner = classifier(dataTest, naList)
 
     #EXPLAIN Calculate and Merge Accuracy
-    # split into funtions
+    # https://docs.scipy.org/doc/numpy/reference/generated/numpy.equal.html
     calculate = np.equal(dataTest[:,0], learner)
+    # https://docs.scipy.org/doc/numpy/reference/generated/numpy.sum.html
     accuracy = [np.sum(calculate), len(dataTest), np.sum(calculate)/ float(len(dataTest))]
 
     # OUTPUT TO FILE ---------------------------------------------
@@ -163,14 +184,10 @@ def main():
     accuracy[2] = format(accuracy[2], '.2g') #floating point arithmetic
 
     f.writelines("Accuracy: " + str(accuracy[0]) + "/" + str(accuracy[1]) + "(" + str(accuracy[2]) + ")")
-
     f.writelines("\nTrue Positive: ")
     f.writelines("\nTrue Negative: ") 
     f.close()
     # ------------------------------------------------------------
- 
-    
-
     #-----------------------------------------------------------
     print(accuracy)
     #-----------------------------------------------------------
