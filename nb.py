@@ -33,21 +33,9 @@ def inputUser(commands):
         print("Provide 2 files ending in train.csv and test.csv")
         exit()
 
-#Function: readFile
-#Input : file
-#Output : data into array, lenght of data
-def readFile(dFile):
-
-    #loads data from text file, where every row must have same # of values.
-    data = np.loadtxt(dFile, delimiter=",", dtype=int)
-
-    dataLen = len(data)
-
-    return data, dataLen
-
 #fileP = probabilities of abnormal and normal hearts inside file
 #input = data
-#output = total of normal and abnormal heart + Probabilities of each.
+#output = total of normal and abnormal heart
 # note : Because the log of 0 is undefined, it would probably be a 
 # good idea not to go there, so we usem-estimation byadding an arbitrary 0.5 to the 
 # numerator and denominator counts of each probability.
@@ -57,12 +45,9 @@ def fileP(features):
     # count_nonzero is used due to all 1's been in the beggining of the file
     # and the 0's at the end
     n = np.count_nonzero(features) + 0.5
-    nP = n / float(hearts) #probability of normal
-
     ab = hearts - n + 0.5
-    abP = ab / float(hearts) # Probability of abnormal
 
-    return n, nP, ab, abP, hearts
+    return n, ab
 
 # Looping through features
 #output : determine probability for each feature
@@ -168,13 +153,13 @@ def main():
     fileTrain, fileTest = inputUser(sys.argv)
 
     # Read data and length from training file
-    data, dataLen = readFile(fileTrain)
+    data = np.loadtxt(fileTrain, delimiter=",", dtype=int)
 
     # Read data and length from test file
-    dataTest, dataTestLen = readFile(fileTest)
+    dataTest = np.loadtxt(fileTest, delimiter=",", dtype=int)
 
     # total of normal and abnormal heart + Probabilities of each given data
-    n, nP, ab, abP, hearts = fileP(data[:,0])
+    n, ab = fileP(data[:,0])
 
     # determines probability for each feature 
     #array of probabilities for normal or abnormal hearts
