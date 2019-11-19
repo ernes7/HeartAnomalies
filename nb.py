@@ -130,7 +130,11 @@ def looping(naList, data, n, ab):
 
 def classifier(dataTest, naList):
 
-    # *** 
+    # Logic Behind the classifier
+    # --------------------------
+    # 
+    #
+    #
 
     learner = [] # array of probabilities learned from every heart
     dataL = len(dataTest)
@@ -144,7 +148,9 @@ def classifier(dataTest, naList):
         # goes through all the feautures in that heart
         for j in range(1, (len(dataTest[0]))):
             x = dataTest[i][j]
+            # this calculates the probability of a heart to be abnormal
             ab += naList[j-1][0][x]
+            # this calculates the probability of a heart to be normal
             n += naList[j-1][1][x]
         
         # if normal > abnormal, a "1" gets added to the learner
@@ -155,7 +161,7 @@ def classifier(dataTest, naList):
             learner.append(0)
 
     return learner
-    
+
 def main():
 
     # Take the input
@@ -179,27 +185,48 @@ def main():
     # EXPLAIN
     learner = classifier(dataTest, naList)
 
-    #EXPLAIN Calculate and Merge Accuracy
+    # Calculate and Merge Accuracy
     # https://docs.scipy.org/doc/numpy/reference/generated/numpy.equal.html
     # If the heart #1 at dataTest and Learner are the same, 
     # returns True at that index in array named calculate.
+    # This is used to test the learner against the test data. 
+    # The result of this is used to output the accuracy
     calculate = np.equal(dataTest[:,0], learner)
-
     # https://docs.scipy.org/doc/numpy/reference/generated/numpy.sum.html
     accuracy = [np.sum(calculate), len(dataTest), np.sum(calculate)/ float(len(dataTest))]
+
+
+    # True Positive and Negative Calculation
+    #https://docs.scipy.org/doc/numpy/reference/generated/numpy.where.html
+    #https://docs.scipy.org/doc/numpy/reference/generated/numpy.count_nonzero.html
+    # TRUE POSITIVE ---------------------------------------
+    same = np.where((dataTest[:,0] == 1) & (np.asarray(learner) == 1)) 
+    count = np.count_nonzero(dataTest[:,0] == 1) # total number of respective heart(normal or abnormal)
+    truePositive = [ len(same[0]), count, len(same[0])/float(count)] # format
+
+    # TRUE NEGATIVE ----------------------------------------
+    x = accuracy[0]-truePositive[0]
+    y = accuracy[1]-truePositive[1]
+    trueNegative = [ x, y, x/y]
+    #trueNegative = true_pn(0,learner, dataTest[:0])
+
 
     # OUTPUT TO FILE ---------------------------------------------
     filename = sys.argv[2] + ".txt" #name of file ending in txt
     f = open(filename, "w") # create file
     accuracy[2] = format(accuracy[2], '.2g') #floating point arithmetic
+    trueNegative[2] = format(trueNegative[2], '.2g')
+    truePositive[2] = format(truePositive[2], '.2g')
 
     f.writelines("Accuracy: " + str(accuracy[0]) + "/" + str(accuracy[1]) + "(" + str(accuracy[2]) + ")")
-    f.writelines("\nTrue Positive: ")
-    f.writelines("\nTrue Negative: ") 
+    f.writelines("\nTrue Negative: " + str(trueNegative[0]) + "/" + str(trueNegative[1]) + "(" + str(trueNegative[2]) + ")")
+    f.writelines("\nTrue Positive: " + str(truePositive[0]) + "/" + str(truePositive[1]) + "(" + str(truePositive[2]) + ")") 
     f.close()
     # ------------------------------------------------------------
     #-----------------------------------------------------------
-    print(accuracy)
+    print("Accuracy: ",accuracy)
+    print("True Negative: ",truePositive)
+    print("True Positive: " ,trueNegative)
     #-----------------------------------------------------------
 
 main()

@@ -5,15 +5,6 @@ CS 441 - Artifial Intelligence
 HW 3 - Heart Anomalies
 WriteUp
 
-*********************
-exlain clasffifier
-explain calculate
-explain accuracy
-true positive and true negative in main()
-eliminate unused variables using laptop vscode
-
-*********************
-
 Hardware and software setup:
     macOS Mojave (Version 10.14.6)
     Processor: 2.7Ghz Intel Core i5
@@ -28,3 +19,7 @@ Output:
     (For Example: spect-orig.test.csv.txt )
 
 How the code works:
+    1. Take names of file using inputUser()
+    2. Read input from files using readFile()
+    3. Extract info from data such as total hearts, 
+        abnormal, and normal.
